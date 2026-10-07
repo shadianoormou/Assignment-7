@@ -12,7 +12,7 @@
 ## BASE_URL_1: https://api.api-store.workers.dev/api/bazardor
 ## BASE_URL_2: https://api.abcz.workers.dev/api/bazardor (alternative)
 
-Endpoints:
+Endpoints:  
 **All Products:**
 ```
 /products
