@@ -1,0 +1,31 @@
+{
+  "name": "bazar-dor",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "auth:migrate": "auth migrate -y"
+  },
+  "dependencies": {
+    "better-auth": "^1.7.7",
+    "better-sqlite3": "^13.0.3",
+    "lucide-react": "^0.545.0",
+    "next": "16.4.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-hot-toast": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^24.7.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "eslint": "^9.38.0",
+    "eslint-config-next": "16.4.0",
+    "typescript": "^5.9.3",
+    "auth": "^1.7.7"
+  }
+}
