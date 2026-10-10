@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Product } from "@/lib/types";
 import { ProductCard } from "./product-card";
 
@@ -14,7 +15,7 @@ export function EmptyState({ title = "কোনো পণ্য পাওয়�
       <span>🧺</span>
       <h3>{title}</h3>
       <p>{description}</p>
-      <a href="/" className="solid-button">হোম পেজে ফিরে যান</a>
+      <Link href="/" className="solid-button">হোম পেজে ফিরে যান</Link>
     </div>
   );
 }

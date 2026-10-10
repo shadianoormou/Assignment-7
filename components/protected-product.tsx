@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -25,7 +26,7 @@ export function ProtectedProduct({ product }: { product: Product }) {
 
   return (
     <div className="container detail-page">
-      <div className="breadcrumb"><a href="/">হোম</a><span>/</span><a href={`/category/${product.category}`}>{product.categoryNameBn}</a><span>/</span><b>{product.nameBn}</b></div>
+      <div className="breadcrumb"><Link href="/">হোম</Link><span>/</span><Link href={`/category/${product.category}`}>{product.categoryNameBn}</Link><span>/</span><b>{product.nameBn}</b></div>
       <section className="detail-hero">
         <div className="detail-intro"><span className="detail-emoji">{product.image}</span><div><span className="eyebrow">{product.categoryIcon} {product.categoryNameBn} বাজারদর</span><h1>{product.nameBn}</h1><p>{product.nameBn} এর আজকের বাজার পরিস্থিতি ও বিভিন্ন বাজারের গড় দাম একসাথে দেখুন।</p><div className="tag-row"><span>{unitLabel(product.unit)}</span><span>ঢাকার বাজার</span><span className={`change-badge ${product.change.dir}`}>{changeLabel(product.change.dir, product.change.pct)}</span></div></div></div>
         <div className="detail-today"><small>আজকের গড় দাম</small><strong>{price(product.today)}</strong><span>গতকালের তুলনায় {changeLabel(product.change.dir, product.change.pct)}</span></div>
