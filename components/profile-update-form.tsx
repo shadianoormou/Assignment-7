@@ -12,6 +12,7 @@ export function ProfileUpdateForm() {
   const { data: session, isPending, refetch } = authClient.useSession();
   const [name, setName] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const currentSessionName = session?.user?.name ?? "";
 
   useEffect(() => {
     if (!isPending && !session?.user) router.replace("/signin?callbackUrl=/profile/update");
@@ -19,7 +20,7 @@ export function ProfileUpdateForm() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const nextName = (name ?? session.user.name ?? "").trim();
+    const nextName = (name ?? currentSessionName).trim();
     if (!nextName) {
       toast.error("নাম লিখুন");
       return;
@@ -38,5 +39,5 @@ export function ProfileUpdateForm() {
 
   if (isPending || !session?.user) return <div className="container page-loading"><div className="loader-ring" /><p>লোড হচ্ছে...</p></div>;
 
-  return <div className="container profile-page"><div className="profile-card"><div className="profile-content"><Link href="/profile" className="breadcrumb">← প্রোফাইলে ফিরে যান</Link><h2>তথ্য আপডেট করুন</h2><p>আপনার প্রোফাইলে যে নামটি দেখাতে চান তা লিখুন।</p><form className="profile-form" onSubmit={handleSubmit}><label>আপনার নাম<input value={name ?? session.user.name ?? ""} onChange={(event) => setName(event.target.value)} autoComplete="name" /></label><button className="solid-button" type="submit" disabled={saving}>{saving && <LoaderCircle className="spin" size={17} />} তথ্য আপডেট করুন</button></form></div></div></div>;
+  return <div className="container profile-page"><div className="profile-card"><div className="profile-content"><Link href="/profile" className="breadcrumb">← প্রোফাইলে ফিরে যান</Link><h2>তথ্য আপডেট করুন</h2><p>আপনার প্রোফাইলে যে নামটি দেখাতে চান তা লিখুন।</p><form className="profile-form" onSubmit={handleSubmit}><label>আপনার নাম<input value={name ?? currentSessionName} onChange={(event) => setName(event.target.value)} autoComplete="name" /></label><button className="solid-button" type="submit" disabled={saving}>{saving && <LoaderCircle className="spin" size={17} />} তথ্য আপডেট করুন</button></form></div></div></div>;
 }
