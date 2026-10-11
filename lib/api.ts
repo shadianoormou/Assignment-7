@@ -23,8 +23,10 @@ export async function getProducts(): Promise<Product[]> {
 
 export async function getProduct(slug: string): Promise<Product | null> {
   try {
-    const product = await apiFetch<Product>(`/products/${encodeURIComponent(slug)}`);
-    return product ?? null;
+    const products = await apiFetch<Product[]>(
+      `/products?slug=${encodeURIComponent(slug)}`,
+    );
+    return products[0] ?? null;
   } catch {
     return null;
   }

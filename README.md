@@ -22,13 +22,11 @@
 
 ## API
 
-Primary API: `https://api.api-store.workers.dev/api/bazardor`
-
-Alternative API: `https://api.abcz.workers.dev/api/bazardor`
+Primary API: `https://openapi.programming-hero.com/api/bazardor`
 
 - `GET /products`
 - `GET /products?category=chal`
-- `GET /products/:slug`
+- `GET /products?slug=alu`
 - `GET /categories`
 
 ## Run locally
