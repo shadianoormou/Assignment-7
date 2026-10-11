@@ -5,6 +5,7 @@
 ## Key features
 
 - আজ দাম বেড়েছে / কমেছে—এমন product highlights এবং live API-driven product grid
+- API-driven price ticker-এ প্রতিটি product-এর বর্তমান দাম, unit এবং পরিবর্তনের হার
 - Category filtering, responsive product cards এবং Bengali-number-aware price sorting
 - Dynamic `/product/[slug]` details page with min, max, average ও বাজারভিত্তিক আজকের দাম
 - BetterAuth email/password authentication, Google/GitHub social-login hooks এবং protected routes
@@ -85,6 +86,8 @@ For deployment, configure the same variables in the hosting provider and set `BE
 ## Production checks
 
 Before submitting, verify the deployed Home, Category, Product Details, Sign In, Sign Up and Profile routes. Also test direct reloads for dynamic routes, mobile layout, API loading, protected redirects and browser console errors.
+
+For deployment, set `NEXT_PUBLIC_API_BASE_URL` to the official Bazar Dor API and configure `BETTER_AUTH_URL`, `NEXT_PUBLIC_APP_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_DB_PATH` and the optional Google/GitHub OAuth credentials in the hosting provider.
 
 ## Submission
 
