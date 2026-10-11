@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogIn, LogOut, Menu, UserRound, X } from "lucide-react";
-import { useState } from "react";
+import { ChevronDown, LoaderCircle, LogIn, LogOut, Menu, UserRound, X } from "lucide-react";
+import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { FALLBACK_CATEGORIES } from "@/lib/constants";
 import { changeLabel, price, unitLabel } from "@/lib/format";
@@ -14,13 +14,18 @@ export function Navbar({ categories, tickerProducts, date, tickerUnavailable = f
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+  const profileMenu = useRef<HTMLDetailsElement>(null);
   const { data: session, isPending } = authClient.useSession();
 
   async function handleSignOut() {
+    if (signingOut) return;
+    setSigningOut(true);
     try {
       await authClient.signOut({
         fetchOptions: {
           onSuccess: () => {
+            profileMenu.current?.removeAttribute("open");
             toast.success("আপনি সফলভাবে সাইন আউট করেছেন");
             router.push("/");
             router.refresh();
@@ -30,6 +35,8 @@ export function Navbar({ categories, tickerProducts, date, tickerUnavailable = f
       });
     } catch {
       toast.error("সাইন আউট করা যায়নি। আবার চেষ্টা করুন");
+    } finally {
+      setSigningOut(false);
     }
   }
 
@@ -55,6 +62,7 @@ export function Navbar({ categories, tickerProducts, date, tickerUnavailable = f
               href={category.href}
               key={category.slug}
               className={pathname === category.href ? "active" : ""}
+              aria-current={pathname === category.href ? "page" : undefined}
               onClick={() => setMobileOpen(false)}
             >
               <span>{category.icon}</span> {category.nameBn}
@@ -66,15 +74,18 @@ export function Navbar({ categories, tickerProducts, date, tickerUnavailable = f
           {isPending ? (
             <span className="nav-skeleton" aria-label="লোড হচ্ছে" />
           ) : session?.user ? (
-            <>
-              <Link className="profile-link" href="/profile">
-                <UserRound size={16} />
-                <span className="hide-mobile">{session.user.name || "প্রোফাইল"}</span>
-              </Link>
-              <button className="icon-button" onClick={handleSignOut} aria-label="সাইন আউট">
-                <LogOut size={18} />
-              </button>
-            </>
+            <details className="profile-menu" ref={profileMenu}>
+              <summary aria-label="প্রোফাইল মেনু" title={session.user.name || "প্রোফাইল"}>
+                <span className="nav-avatar" aria-hidden="true">{session.user.name?.trim().charAt(0) || "U"}</span>
+                <span className="profile-name hide-mobile">{session.user.name || "প্রোফাইল"}</span>
+                <ChevronDown size={12} aria-hidden="true" />
+              </summary>
+              <div className="profile-dropdown">
+                <p>{session.user.name || "বাজার দর ব্যবহারকারী"}</p>
+                <Link href="/profile" onClick={() => profileMenu.current?.removeAttribute("open")}><UserRound size={16} /> আমার প্রোফাইল</Link>
+                <button onClick={handleSignOut} disabled={signingOut}>{signingOut ? <LoaderCircle size={16} className="spin" /> : <LogOut size={16} />} সাইন আউট</button>
+              </div>
+            </details>
           ) : (
             <>
               <Link className="text-button" href="/signin">
@@ -88,7 +99,7 @@ export function Navbar({ categories, tickerProducts, date, tickerUnavailable = f
           <button
             className="menu-button"
             onClick={() => setMobileOpen((open) => !open)}
-            aria-label="মেনু খুলুন"
+            aria-label={mobileOpen ? "মেনু বন্ধ করুন" : "মেনু খুলুন"}
             aria-expanded={mobileOpen}
             aria-controls="category-navigation"
           >
