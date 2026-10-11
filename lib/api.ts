@@ -1,50 +1,31 @@
-import { API_BASE_URL, FALLBACK_CATEGORIES } from "./constants";
+import { cache } from "react";
+import { API_BASE_URL } from "./constants";
 import type { Category, Product } from "./types";
 
 async function apiFetch<T>(path: string): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     next: { revalidate: 300 },
+    signal: AbortSignal.timeout(12000),
   });
 
   if (!response.ok) {
     throw new Error(`API request failed: ${response.status}`);
   }
 
-  return response.json() as Promise<T>;
+  const data: unknown = await response.json();
+  if (!Array.isArray(data)) throw new Error("Unexpected market API response format");
+  return data as T;
 }
 
-export async function getProducts(): Promise<Product[]> {
-  try {
-    return await apiFetch<Product[]>("/products");
-  } catch {
-    return [];
-  }
-}
+export const getProducts = cache(async (): Promise<Product[]> => apiFetch<Product[]>("/products"));
 
 export async function getProduct(slug: string): Promise<Product | null> {
-  try {
-    const products = await apiFetch<Product[]>(
-      `/products?slug=${encodeURIComponent(slug)}`,
-    );
-    return products[0] ?? null;
-  } catch {
-    return null;
-  }
+  const products = await apiFetch<Product[]>(`/products?slug=${encodeURIComponent(slug)}`);
+  return products.find(product => product.slug === slug) ?? null;
 }
 
-export async function getCategories(): Promise<Category[]> {
-  try {
-    const categories = await apiFetch<Category[]>("/categories");
-    return categories.length ? categories : FALLBACK_CATEGORIES;
-  } catch {
-    return FALLBACK_CATEGORIES;
-  }
-}
+export const getCategories = cache(async (): Promise<Category[]> => apiFetch<Category[]>("/categories"));
 
 export async function getCategoryProducts(slug: string): Promise<Product[]> {
-  try {
-    return await apiFetch<Product[]>(`/products?category=${encodeURIComponent(slug)}`);
-  } catch {
-    return [];
-  }
+  return apiFetch<Product[]>(`/products?category=${encodeURIComponent(slug)}`);
 }

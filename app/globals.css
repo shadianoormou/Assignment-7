@@ -51,6 +51,8 @@ button { cursor: pointer; }
 .ticker-item { display: inline-flex; align-items: center; gap: 8px; padding: 8px 25px; font-size: 12px; border-right: 1px solid var(--line); }
 .ticker-item b { color: var(--ink); font-weight: 500; }
 .ticker-item i { color: var(--green); font-style: normal; font-weight: 700; }
+.ticker-item i.down { color: #ba554b; }
+.ticker-item i.flat { color: #737d78; }
 .ticker:hover .ticker-track, .ticker:focus-within .ticker-track { animation-play-state: paused; }
 @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
@@ -206,6 +208,7 @@ button { cursor: pointer; }
 .profile-banner { padding: 30px; background: #e8f1e5; display: flex; align-items: center; gap: 17px; }
 .avatar { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: var(--green); color: white; font-size: 24px; font-weight: 800; }
 .profile-banner h1 { margin: 0; font-size: 27px; letter-spacing: -.06em; }
+.profile-banner > div { min-width: 0; overflow-wrap: anywhere; }
 .profile-banner p { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
 .profile-content { padding: 30px; }
 .profile-content h2 { margin: 0 0 7px; font-size: 21px; letter-spacing: -.04em; }

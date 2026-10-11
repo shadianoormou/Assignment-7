@@ -10,7 +10,7 @@ import { changeLabel, price, unitLabel } from "@/lib/format";
 import { authClient } from "@/lib/auth-client";
 import type { Category, TickerProduct } from "@/lib/types";
 
-export function Navbar({ categories, tickerProducts, date }: { categories: Category[]; tickerProducts: TickerProduct[]; date: string }) {
+export function Navbar({ categories, tickerProducts, date, tickerUnavailable = false }: { categories: Category[]; tickerProducts: TickerProduct[]; date: string; tickerUnavailable?: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -97,14 +97,14 @@ export function Navbar({ categories, tickerProducts, date }: { categories: Categ
         </div>
       </div>
       <div className="ticker" aria-label="দামের আপডেট">
-        <div className="ticker-track" aria-live="polite">
+        <div className="ticker-track">
           {(tickerProducts.length ? [...tickerProducts, ...tickerProducts] : []).map((product, index) => (
-            <Link href={`/product/${product.slug}`} key={`${product.id}-${index}`} className="ticker-item">
-              {product.image} {product.nameBn} <b>{price(product.today)} / {unitLabel(product.unit)}</b>{" "}
-              <i>{changeLabel(product.change.dir, product.change.pct)}</i>
+            <Link href={`/product/${product.slug}`} key={`${product.id}-${index}`} className="ticker-item" aria-hidden={index >= tickerProducts.length ? true : undefined} tabIndex={index >= tickerProducts.length ? -1 : undefined}>
+              {product.image} {product.nameBn} <b>{price(product.today)} / {unitLabel(product.unit).replace("প্রতি ", "")}</b>{" "}
+              <i className={`ticker-change ${product.change.dir}`}>{changeLabel(product.change.dir, product.change.pct)}</i>
             </Link>
           ))}
-          {!tickerProducts.length && <span className="ticker-item">🧺 বাজারের পণ্যের দাম আপডেট হচ্ছে...</span>}
+          {!tickerProducts.length && <span className="ticker-item" role="status">🧺 {tickerUnavailable ? "দামের আপডেট এখন লোড করা যাচ্ছে না। আবার চেষ্টা করুন।" : "বাজারের পণ্যের দাম আপডেট হচ্ছে..."}</span>}
         </div>
       </div>
     </header>

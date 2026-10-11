@@ -7,6 +7,8 @@ import { getCategories, getProducts } from "@/lib/api";
 import { dateInBangla } from "@/lib/format";
 import { Suspense } from "react";
 import { AuthFeedback } from "@/components/auth-feedback";
+import { FALLBACK_CATEGORIES } from "@/lib/constants";
+import type { TickerProduct } from "@/lib/types";
 import "./globals.css";
 
 const bengaliFont = Hind_Siliguri({
@@ -17,24 +19,32 @@ const bengaliFont = Hind_Siliguri({
 export const metadata: Metadata = {
   title: "বাজার দর | বাংলাদেশের দৈনিক বাজারদর",
   description: "বাংলাদেশের নিত্যপ্রয়োজনীয় পণ্যের সর্বশেষ বাজারদর এক নজরে দেখুন।",
+  icons: { icon: "/logo-icon.png" },
 };
 
-export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const [categories, products] = await Promise.all([getCategories(), getProducts()]);
-  const tickerProducts = products.map(({ id, slug, nameBn, image, unit, today, change }) => ({
-    id,
-    slug,
-    nameBn,
-    image,
-    unit,
-    today,
-    change,
-  }));
+async function MarketHeader() {
+  let categories = FALLBACK_CATEGORIES;
+  let tickerProducts: TickerProduct[] = [];
+  let tickerUnavailable = false;
+  try {
+    const [apiCategories, products] = await Promise.all([getCategories(), getProducts()]);
+    categories = apiCategories;
+    // Do not serialize market-level detail data into the public header.
+    tickerProducts = products.map(({ id, slug, nameBn, image, unit, today, change }) => ({ id, slug, nameBn, image, unit, today, change }));
+  } catch (error) {
+    console.error("Market header unavailable:", error);
+    tickerUnavailable = true;
+  }
+  return <Navbar categories={categories} tickerProducts={tickerProducts} date={dateInBangla()} tickerUnavailable={tickerUnavailable} />;
+}
 
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="bn" className={bengaliFont.variable} data-theme="light">
       <body>
-        <Navbar categories={categories} tickerProducts={tickerProducts} date={dateInBangla()} />
+        <Suspense fallback={<Navbar categories={FALLBACK_CATEGORIES} tickerProducts={[]} date={dateInBangla()} />}>
+          <MarketHeader />
+        </Suspense>
         <main>{children}</main>
         <Footer />
         <ToastProvider />

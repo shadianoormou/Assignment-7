@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "test:smoke": "node scripts/smoke-test.mjs",
+    "test": "tsx --test tests/*.test.ts",
     "auth:migrate": "auth migrate --config ./auth.config.ts -y"
   },
   "dependencies": {
@@ -32,6 +33,7 @@
     "eslint": "^9.38.0",
     "eslint-config-next": "16.4.0",
     "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15",
     "typescript": "^5.9.3"
   }
 }
