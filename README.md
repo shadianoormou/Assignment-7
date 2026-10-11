@@ -11,7 +11,7 @@
 - Category filtering, responsive product cards এবং Bengali-number-aware price sorting
 - Dynamic `/product/[slug]` details page with min, max, average ও বাজারভিত্তিক আজকের দাম
 - BetterAuth email/password authentication এবং server-side protected routes
-- Google/GitHub OAuth integration ও success/error feedback (credentials দিয়ে live testing বাকি)
+- GitHub OAuth live login যাচাই করা হয়েছে; Google integration ও success/error feedback আছে, তবে Google credentials setup ও live testing বাকি
 - Toast feedback, loading skeleton, friendly 404 page এবং mobile/tablet/desktop responsive layout
 - Protected My Profile page থেকে BetterAuth `updateUser` দিয়ে নাম আপডেট
 
@@ -131,15 +131,15 @@ Before submitting, verify the deployed Home, Category, Product Details, Sign In,
 - Home renders all 33 API products at 320, 375, 768, 1024 and 1440px without page-level horizontal overflow. Category and Product Details were also checked at 375px. No warning/error console messages were captured in this live browser test session.
 - `pnpm test` (9 tests), `pnpm lint` and `pnpm build` passed before publication.
 
-### Remaining OAuth checks
+### Social login verification and remaining setup
 
-- GitHub OAuth app registration is complete with the production callback above. Generating its client secret is blocked by GitHub's account-owner email verification. Until verification and secret configuration are complete, real GitHub sign-in is **not verified**.
-- Google OAuth credentials and consent configuration are not complete. The Google Cloud project setup could not be verified because the console failed to load its project state; real Google sign-in is **not verified**.
+- **GitHub real-account login is verified.** Account-owner verification is complete; the client ID and client secret are stored only in Vercel Production. After authorization for `read:user` and `user:email`, a fresh login returned Home with the success toast. Profile reload preserved the GitHub session; protected Product Details and its direct reload displayed all 12 market rows. Logout ended the session, and a subsequent protected-product request redirected to Sign In. An initial `state_mismatch` was safely rejected; a fresh sign-in succeeded without disabling OAuth state validation.
+- The dedicated Google Cloud project `Bazar Dor Assignment 7` (`proven-cogency-511310-a7`) exists and was verified in the project selector. OAuth credentials and consent configuration are not complete: both Credentials and the newer Auth Platform Branding page fail to load; the Branding page still showed “Failed to load” after Retry. Real Google sign-in is **not verified**.
 - The social-login code and buttons are implemented, but they are not a substitute for configured credentials and successful real-account callback tests. Do not consider all assignment requirements complete until both providers are configured and tested.
 
 The database owner can manage the project in the [Neon console](https://console.neon.tech/app/projects/lingering-snow-97898076/branches/br-broad-math-azd6bzym). Connection passwords and OAuth credentials are not included in this repository.
 
-Before submitting, complete both real-account OAuth checks. The live link, persistent database and live route/reload checks are ready.
+Before submitting, complete Google OAuth setup and its real-account login check. GitHub login, the live link, persistent database and live route/reload checks are ready.
 
 ## Submission
 
