@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { changeLabel, price, unitLabel } from "@/lib/format";
-import type { Product } from "@/lib/types";
+import type { ProductSummary } from "@/lib/types";
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({ product }: { product: ProductSummary }) {
   return (
     <Link href={`/product/${product.slug}`} className="card product-card" aria-label={`${product.nameBn}, ${price(product.today)}, ${unitLabel(product.unit)}`}>
       <div className="product-card-top">

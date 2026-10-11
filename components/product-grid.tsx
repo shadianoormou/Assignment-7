@@ -1,8 +1,8 @@
 import Link from "next/link";
-import type { Product } from "@/lib/types";
+import type { ProductSummary } from "@/lib/types";
 import { ProductCard } from "./product-card";
 
-export function ProductGrid({ products }: { products: Product[] }) {
+export function ProductGrid({ products }: { products: ProductSummary[] }) {
   if (!products.length) {
     return <EmptyState />;
   }

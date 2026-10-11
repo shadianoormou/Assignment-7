@@ -31,7 +31,9 @@ export type Category = {
   icon: string;
 };
 
-export type TickerProduct = Pick<
+export type ProductSummary = Pick<
   Product,
   "id" | "slug" | "nameBn" | "image" | "unit" | "today" | "change"
 >;
+
+export type TickerProduct = ProductSummary;

@@ -9,6 +9,7 @@ import { Suspense } from "react";
 import { AuthFeedback } from "@/components/auth-feedback";
 import { FALLBACK_CATEGORIES } from "@/lib/constants";
 import type { TickerProduct } from "@/lib/types";
+import { toProductSummary } from "@/lib/product-summary";
 import "./globals.css";
 
 const bengaliFont = Hind_Siliguri({
@@ -30,7 +31,7 @@ async function MarketHeader() {
     const [apiCategories, products] = await Promise.all([getCategories(), getProducts()]);
     categories = apiCategories;
     // Do not serialize market-level detail data into the public header.
-    tickerProducts = products.map(({ id, slug, nameBn, image, unit, today, change }) => ({ id, slug, nameBn, image, unit, today, change }));
+    tickerProducts = products.map(toProductSummary);
   } catch (error) {
     console.error("Market header unavailable:", error);
     tickerUnavailable = true;

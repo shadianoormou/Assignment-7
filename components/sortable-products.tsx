@@ -2,12 +2,12 @@
 
 import { useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
-import type { Product } from "@/lib/types";
+import type { ProductSummary } from "@/lib/types";
 import { ProductGrid } from "./product-grid";
 
 type SortValue = "default" | "asc" | "desc";
 
-export function SortableProducts({ products }: { products: Product[] }) {
+export function SortableProducts({ products }: { products: ProductSummary[] }) {
   const [sort, setSort] = useState<SortValue>("default");
   const sorted = useMemo(() => {
     if (sort === "default") return products;
