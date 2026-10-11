@@ -11,7 +11,7 @@
 - Category filtering, responsive product cards এবং Bengali-number-aware price sorting
 - Dynamic `/product/[slug]` details page with min, max, average ও বাজারভিত্তিক আজকের দাম
 - BetterAuth email/password authentication এবং server-side protected routes
-- GitHub OAuth live login যাচাই করা হয়েছে; Google integration ও success/error feedback আছে, তবে Google credentials setup ও live testing বাকি
+- GitHub ও Google OAuth live login যাচাই করা হয়েছে, সঙ্গে success/error feedback
 - Toast feedback, loading skeleton, friendly 404 page এবং mobile/tablet/desktop responsive layout
 - Protected My Profile page থেকে BetterAuth `updateUser` দিয়ে নাম আপডেট
 
@@ -143,17 +143,16 @@ Before submitting, verify the deployed Home, Category, Product Details, Sign In,
 - Navbar/Footer alignment was corrected in a separate design commit, `ce6c520`, whose Vercel deployment reached Ready. The supplied Penpot reference was inspected directly: at 1440px, the brand starts at x=154, category links start at x=160 in a 49px second row, and the one-line light footer is 69px tall. Those measurements were verified on the published site; dynamic dates and actual user names are preserved rather than copied from the mockup.
 - The logged-in native profile dropdown supports keyboard activation, Profile navigation and closing after selection. Profile reload preserved the real GitHub session. The updated Home rendered all 33 products at 320, 375, 768, 1024 and 1440px without page-level horizontal overflow; mobile category selection closed the menu, retained its active highlight and reloaded all five vegetable cards. The fresh browser session captured no warning/error console messages. The 14 tests, lint and production build passed for this change.
 - Sign-out from the updated dropdown returned Home and changed the header back to Sign In/Sign Up. A subsequent Profile request redirected to Sign In. A new real GitHub sign-in then returned Home with the social-login success toast, without requesting additional permissions.
-- **The assignment is still not fully complete:** Google OAuth client creation remains blocked by the Google Cloud console's “Failed to load” page. No Google credentials were fabricated and real Google login has not been tested.
+- **The assignment requirements are complete:** both social providers now have production credentials, and real-account login has been verified on the live site.
 
-### Social login verification and remaining setup
+### Social login verification
 
 - **GitHub real-account login is verified.** Account-owner verification is complete; the client ID and client secret are stored only in Vercel Production. After authorization for `read:user` and `user:email`, a fresh login returned Home with the success toast. Profile reload preserved the GitHub session; protected Product Details and its direct reload displayed all 12 market rows. Logout ended the session, and a subsequent protected-product request redirected to Sign In. An initial `state_mismatch` was safely rejected; a fresh sign-in succeeded without disabling OAuth state validation.
-- The dedicated Google Cloud project `Bazar Dor Assignment 7` (`proven-cogency-511310-a7`) exists and was verified in the project selector. The Google Auth Platform consent configuration is now saved as an external app with the live support/contact email. Google’s OAuth client form accepted the production origin and callback URL, but client creation failed on Google’s side (`Create failed`, tracking numbers `c60845814050655` and `c263908347668605`; the legacy route also returned page-load failures, including `c257696958614308`). No Google Client ID or Client Secret was fabricated or added to Vercel. Real Google sign-in is **not verified**.
-- The social-login code and buttons are implemented, but they are not a substitute for configured credentials and successful real-account callback tests. Do not consider all assignment requirements complete until both providers are configured and tested.
+- **Google real-account login is verified.** The dedicated Google Cloud project `Bazar Dor Assignment 7` (`proven-cogency-511310-a7`) has an external consent configuration and a Web OAuth client restricted to the live origin and BetterAuth callback. The production Client ID and Client Secret are stored only in Vercel Production. A fresh live Google sign-in with the project owner account returned Home with `?auth=success` and the social-login success toast; authenticated Product Details and Profile reloads also passed.
 
 The database owner can manage the project in the [Neon console](https://console.neon.tech/app/projects/lingering-snow-97898076/branches/br-broad-math-azd6bzym). Connection passwords and OAuth credentials are not included in this repository.
 
-Before submitting, complete Google OAuth setup and its real-account login check. GitHub login, the live link, persistent database and live route/reload checks are ready.
+Before submitting, recheck the live link, both social logins, the persistent database and the dynamic route reloads from your own device.
 
 ## Submission
 
