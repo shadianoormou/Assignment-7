@@ -1,21 +1,18 @@
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
 import { changeLabel, price, unitLabel } from "@/lib/format";
 import type { Product } from "@/lib/types";
 
 export function ProductCard({ product }: { product: Product }) {
   return (
-    <Link href={`/product/${product.slug}`} className="product-card">
+    <Link href={`/product/${product.slug}`} className="card product-card" aria-label={`${product.nameBn}, ${price(product.today)}, ${unitLabel(product.unit)}`}>
       <div className="product-card-top">
         <span className="product-emoji" aria-hidden="true">{product.image}</span>
-        <span className="card-arrow"><ArrowUpRight size={17} /></span>
+        <div>
+          <h3>{product.nameBn}</h3>
+          <p className="muted">{unitLabel(product.unit)}</p>
+        </div>
       </div>
       <div className="product-card-copy">
-        <div className="product-name-row">
-          <h3>{product.nameBn}</h3>
-          <span className="category-chip">{product.categoryNameBn}</span>
-        </div>
-        <p className="muted">{unitLabel(product.unit)}</p>
         <div className="price-row">
           <span>
             <small>আজকের দাম</small>

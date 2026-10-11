@@ -6,11 +6,11 @@ import { LogIn, LogOut, Menu, UserRound, X } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { FALLBACK_CATEGORIES } from "@/lib/constants";
-import { changeLabel, dateInBangla, price, unitLabel } from "@/lib/format";
+import { changeLabel, price, unitLabel } from "@/lib/format";
 import { authClient } from "@/lib/auth-client";
 import type { Category, TickerProduct } from "@/lib/types";
 
-export function Navbar({ categories, tickerProducts }: { categories: Category[]; tickerProducts: TickerProduct[] }) {
+export function Navbar({ categories, tickerProducts, date }: { categories: Category[]; tickerProducts: TickerProduct[]; date: string }) {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -44,11 +44,11 @@ export function Navbar({ categories, tickerProducts }: { categories: Category[];
           <span className="brand-mark">🛒</span>
           <span>
             <strong>বাজার দর</strong>
-            <small>{dateInBangla()}</small>
+            <small>{date}</small>
           </span>
         </Link>
 
-        <nav className={`category-nav ${mobileOpen ? "is-open" : ""}`} aria-label="ক্যাটাগরি নেভিগেশন">
+        <nav id="category-navigation" className={`category-nav ${mobileOpen ? "is-open" : ""}`} aria-label="ক্যাটাগরি নেভিগেশন">
           {navLinks.map((category) => (
             <Link
               href={category.href}
@@ -89,6 +89,7 @@ export function Navbar({ categories, tickerProducts }: { categories: Category[];
             onClick={() => setMobileOpen((open) => !open)}
             aria-label="মেনু খুলুন"
             aria-expanded={mobileOpen}
+            aria-controls="category-navigation"
           >
             {mobileOpen ? <X size={22} /> : <Menu size={22} />}
           </button>

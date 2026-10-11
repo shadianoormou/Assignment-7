@@ -10,5 +10,5 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
   const category = categories.find((item) => item.slug === slug);
   if (!category || !products.length) notFound();
 
-  return <section className="category-products"><div className="container"><div className="page-intro"><div><span className="category-icon-large">{category.icon}</span><h1>{category.nameBn}</h1><p>{category.nameBn} ক্যাটাগরির সকল পণ্যের আজকের বাজারদর।</p></div><SortableProducts products={products} /></div></div></section>;
+  return <section className="category-products"><div className="container"><div className="page-intro"><div><span className="category-icon-large">{category.icon}</span><h1>{category.nameBn}</h1><p>{category.nameBn} ক্যাটাগরির সকল পণ্যের আজকের বাজারদর।</p></div></div><SortableProducts products={products} /></div></section>;
 }

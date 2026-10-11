@@ -16,7 +16,7 @@ export function SortableProducts({ products }: { products: Product[] }) {
 
   return (
     <>
-      <label className="sort-control">
+      <div className="flex justify-end mb-5"><label className="sort-control">
         <span>সাজান</span>
         <select value={sort} onChange={(event) => setSort(event.target.value as SortValue)} aria-label="পণ্য সাজান">
           <option value="default">ডিফল্ট</option>
@@ -24,7 +24,7 @@ export function SortableProducts({ products }: { products: Product[] }) {
           <option value="desc">দাম: বেশি থেকে কম</option>
         </select>
         <ChevronDown size={17} />
-      </label>
+      </label></div>
       <ProductGrid products={sorted} />
     </>
   );
