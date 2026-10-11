@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Github, LoaderCircle } from "lucide-react";
 import { FormEvent, useState } from "react";
 import toast from "react-hot-toast";
@@ -10,7 +10,11 @@ import { authClient } from "@/lib/auth-client";
 export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
   const isSignUp = mode === "signup";
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
+
+  const requestedCallback = searchParams.get("callbackUrl");
+  const callbackUrl = requestedCallback?.startsWith("/") && !requestedCallback.startsWith("//") ? requestedCallback : "/";
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -29,32 +33,42 @@ export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
     }
 
     setLoading(true);
-    if (isSignUp) {
-      const result = await authClient.signUp.email({ name, email, password });
-      if (result.error) {
-        toast.error(result.error.message || "অ্যাকাউন্ট তৈরি করা যায়নি");
+    try {
+      if (isSignUp) {
+        const result = await authClient.signUp.email({ name, email, password });
+        if (result.error) {
+          toast.error(result.error.message || "অ্যাকাউন্ট তৈরি করা যায়নি");
+        } else {
+          toast.success("অ্যাকাউন্ট তৈরি হয়েছে। এখন সাইন ইন করুন");
+          router.push(`/signin${callbackUrl !== "/" ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ""}`);
+        }
       } else {
-        toast.success("অ্যাকাউন্ট তৈরি হয়েছে। এখন সাইন ইন করুন");
-        router.push("/signin");
+        const result = await authClient.signIn.email({ email, password });
+        if (result.error) {
+          toast.error(result.error.message || "ইমেইল বা পাসওয়ার্ড সঠিক নয়");
+        } else {
+          toast.success("স্বাগতম! সাইন ইন সফল হয়েছে");
+          router.push(callbackUrl);
+          router.refresh();
+        }
       }
-    } else {
-      const result = await authClient.signIn.email({ email, password });
-      if (result.error) {
-        toast.error(result.error.message || "ইমেইল বা পাসওয়ার্ড সঠিক নয়");
-      } else {
-        toast.success("স্বাগতম! সাইন ইন সফল হয়েছে");
-        router.push("/");
-        router.refresh();
-      }
+    } catch {
+      toast.error("সার্ভারের সাথে যোগাযোগ করা যায়নি। আবার চেষ্টা করুন");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   async function handleSocial(provider: "google" | "github") {
     setLoading(true);
-    const result = await authClient.signIn.social({ provider, callbackURL: "/" });
-    if (result.error) {
-      toast.error(`${provider === "google" ? "Google" : "GitHub"} Login সেটআপ করা নেই`);
+    try {
+      const result = await authClient.signIn.social({ provider, callbackURL: callbackUrl });
+      if (result.error) {
+        toast.error(`${provider === "google" ? "Google" : "GitHub"} Login সেটআপ করা নেই`);
+      }
+    } catch {
+      toast.error("Social Login চালু করা যায়নি। পরে আবার চেষ্টা করুন");
+    } finally {
       setLoading(false);
     }
   }

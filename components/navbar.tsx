@@ -17,15 +17,19 @@ export function Navbar({ categories, tickerProducts }: { categories: Category[];
   const { data: session, isPending } = authClient.useSession();
 
   async function handleSignOut() {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          toast.success("আপনি সফলভাবে সাইন আউট করেছেন");
-          router.push("/");
-          router.refresh();
+    try {
+      await authClient.signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            toast.success("আপনি সফলভাবে সাইন আউট করেছেন");
+            router.push("/");
+            router.refresh();
+          },
         },
-      },
-    });
+      });
+    } catch {
+      toast.error("সাইন আউট করা যায়নি। আবার চেষ্টা করুন");
+    }
   }
 
   const navLinks = (categories.length ? categories : FALLBACK_CATEGORIES).map((category) => ({
