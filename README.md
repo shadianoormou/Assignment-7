@@ -129,7 +129,18 @@ Before submitting, verify the deployed Home, Category, Product Details, Sign In,
 - 14 live database/authentication checks passed using a synthetic test account: registration without automatic sign-in, invalid-password rejection, secure session cookie, email login, authenticated Product/Profile/Profile Update reloads, profile update, logout, session invalidation, and persistence of the updated name after a new login.
 - Live browser checks passed: protected-product login returns to the requested product; Product Details reload displays all 12 market rows; profile name update survives reload; both numeric category sort orders and category reload work; logout redirects a subsequent protected Profile request to Sign In.
 - Home renders all 33 API products at 320, 375, 768, 1024 and 1440px without page-level horizontal overflow. Category and Product Details were also checked at 375px. No warning/error console messages were captured in this live browser test session.
-- `pnpm test` (9 tests), `pnpm lint` and `pnpm build` passed before publication.
+- `pnpm test` (14 tests), `pnpm lint` and `pnpm build` passed before the latest application publication.
+
+### Final requirements audit (11 October 2026)
+
+- Product Details now includes an explicit category tag alongside its unit and change badge. Public category sorting and the ticker receive only card-summary fields, not market-table data.
+- API responses are validated entry by entry; missing fields, invalid prices, malformed market ranges and invalid change directions produce the retry/error state. Category filtering also checks the returned category, even if an upstream endpoint ignores the filter.
+- The two application fixes were pushed separately as `c242293` and `e855296`; both Vercel Production deployments reached Ready.
+- 24 live HTTP/authentication/data checks passed across the audit batches: Home, all eight category reloads, auth-route responses, the hero asset, protected redirects, friendly invalid routes, persistent database login, authenticated Product/Profile/Profile Update reloads, logout/session invalidation and the contributor list. Initial streaming HTML is not treated as proof that client forms or detail tags rendered; those were checked after hydration in the browser.
+- Browser rechecks passed for six cards in each price-mover section, 33 products, eight category links, the animated ticker, the Home anchor scrolling to its section, both numeric sort orders and default sorting after reload. Sign Up validation toast, Sign In/Sign Up fields and both social buttons were checked at 375px. The authenticated mobile Product Details page showed its category tag and all 12 market rows, with no page-level horizontal overflow.
+- Home was rechecked at 320, 375, 768, 1024 and 1440px: all 33 products rendered without page-level horizontal overflow. The fresh audit browser tab captured no warning/error console messages.
+- The existing real GitHub session remained usable after redeployment, including Profile and Product Details reloads. GitHub's contributor API lists only `shadianoormou`.
+- **The assignment is still not fully complete:** Google OAuth client creation remains blocked by the Google Cloud console's “Failed to load” page. No Google credentials were fabricated and real Google login has not been tested.
 
 ### Social login verification and remaining setup
 
