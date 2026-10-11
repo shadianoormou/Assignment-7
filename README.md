@@ -1,5 +1,7 @@
 # বাজার দর · BazarDor
 
+[Live website](https://assignment-7-kohl-xi.vercel.app) · [GitHub repository](https://github.com/shadianoormou/Assignment-7)
+
 বাংলাদেশের নিত্যপ্রয়োজনীয় পণ্যের দৈনিক বাজারদর এক নজরে দেখার জন্য তৈরি একটি responsive price-tracking application। API থেকে product, category এবং market-wise price data নিয়ে Home, Category ও protected Product Details experience তৈরি করা হয়েছে।
 
 ## Key features
@@ -62,7 +64,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Authentication setup
 
-Email/password works with the local SQLite database. To enable social login, add OAuth credentials in `.env.local`:
+Email/password works with SQLite locally and persistent Neon PostgreSQL on the live Vercel deployment. To enable social login, add OAuth credentials in `.env.local` for development and the hosting environment settings for production:
 
 ```env
 GOOGLE_CLIENT_ID=
@@ -75,8 +77,8 @@ Sign-up intentionally does not log the user in; it takes them to Sign In. Normal
 
 Register these OAuth callback URLs using the actual deployed origin:
 
-- Google: `https://your-domain.com/api/auth/callback/google`
-- GitHub: `https://your-domain.com/api/auth/callback/github`
+- Google: `https://assignment-7-kohl-xi.vercel.app/api/auth/callback/google`
+- GitHub: `https://assignment-7-kohl-xi.vercel.app/api/auth/callback/github`
 
 For local development, replace the origin with `http://localhost:3000`. See the official [Google setup](https://better-auth.com/docs/authentication/google) and [GitHub setup](https://better-auth.com/docs/authentication/github). Credentials must remain in local/hosting environment settings, never in Git.
 
@@ -84,7 +86,7 @@ For local development, replace the origin with `http://localhost:3000`. See the 
 
 1. Import this GitHub repository as a Next.js project.
 2. Attach a persistent managed PostgreSQL database and set `DATABASE_URL`. A project-local SQLite file is not suitable for serverless hosting.
-3. Configure `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` (the exact live origin), the official `NEXT_PUBLIC_API_BASE_URL`, and both providers' OAuth credentials.
+3. Configure `BETTER_AUTH_SECRET`, the official `NEXT_PUBLIC_API_BASE_URL`, and both providers' OAuth credentials. Set `BETTER_AUTH_URL` to the exact live origin on non-Vercel hosts. On Vercel Production, the application also resolves the stable origin from `VERCEL_PROJECT_PRODUCTION_URL`; keep system environment variables enabled. An explicit `BETTER_AUTH_URL` takes precedence. Never use a temporary deployment URL for the registered OAuth callback.
 4. Set `DATABASE_URL_UNPOOLED` to the direct PostgreSQL connection for migrations, while `DATABASE_URL` uses the pooled connection for application traffic. Run `pnpm auth:migrate` with those environment variables. The database must be reachable from the migration environment. For an empty PostgreSQL database, `better-auth-postgresql.sql` is also available as a one-time bootstrap; the original `better-auth-schema.sql` is SQLite-only.
 5. Build with `pnpm build` and deploy. The build deliberately does not create or modify production database tables.
 6. Register the live OAuth callback URLs above and test both providers with real accounts.
@@ -107,7 +109,7 @@ pnpm lint
 pnpm build
 ```
 
-The six regression tests cover Bengali numbers, the Dhaka date, market min/max/average, API outages, malformed responses and unknown slugs. API failures show an error/retry state, not a misleading empty product list.
+The nine regression tests cover Bengali numbers, the Dhaka date, market min/max/average, API outages, malformed responses, unknown slugs and authentication-origin selection (explicit override, stable Vercel Production origin, and no implicit production origin for local/preview environments). API failures show an error/retry state, not a misleading empty product list.
 
 `pnpm test:smoke` runs 17 HTTP/authentication checks against `http://localhost:3002` (override with `TEST_APP_URL`). It creates synthetic users, so run it only against a local server using a separate, migrated test database. The script refuses to write to a non-local host. For a production-mode local test, provide a random secret, `BETTER_AUTH_URL=http://localhost:3002` and an absolute test `BETTER_AUTH_DB_PATH`, then run `pnpm start --port 3002`.
 
@@ -117,19 +119,29 @@ Local browser checks completed: Home at 320, 375, 768, 1024 and 1440px; both num
 
 Before submitting, verify the deployed Home, Category, Product Details, Sign In, Sign Up and Profile routes. Also test direct reloads for dynamic routes, mobile layout, API loading, protected redirects and browser console errors.
 
-### Current deployment progress (11 October 2026)
+### Verified live deployment (11 October 2026)
 
 - A persistent Neon PostgreSQL 18 project, `bazar-dor-assignment7`, is provisioned on the Free plan in Singapore.
 - Database `bazardoor`, branch `production`: the four BetterAuth tables (`user`, `session`, `account`, `verification`) and their lookup indexes have been created and verified.
 - Existing self-managed BetterAuth is preserved; Neon-managed authentication is not enabled.
-- Hosting environment configuration and publication are pending. The database is not yet connected to a live application.
-- Real Google/GitHub login and live route/reload checks are still pending. No deployed URL is claimed until the application is published and tested.
+- Vercel Production is published at [assignment-7-kohl-xi.vercel.app](https://assignment-7-kohl-xi.vercel.app), connected to Neon using a pooled PostgreSQL connection. The database password and a random authentication secret are stored only in hosting settings.
+- 18 live HTTP checks passed: Home, all eight categories, Sign In/Sign Up, the hero asset, unauthenticated protected redirects, and friendly unknown-route handling. Next.js streaming redirects/not-found responses were checked semantically, not only by HTTP status.
+- 14 live database/authentication checks passed using a synthetic test account: registration without automatic sign-in, invalid-password rejection, secure session cookie, email login, authenticated Product/Profile/Profile Update reloads, profile update, logout, session invalidation, and persistence of the updated name after a new login.
+- Live browser checks passed: protected-product login returns to the requested product; Product Details reload displays all 12 market rows; profile name update survives reload; both numeric category sort orders and category reload work; logout redirects a subsequent protected Profile request to Sign In.
+- Home renders all 33 API products at 320, 375, 768, 1024 and 1440px without page-level horizontal overflow. Category and Product Details were also checked at 375px. No warning/error console messages were captured in this live browser test session.
+- `pnpm test` (9 tests), `pnpm lint` and `pnpm build` passed before publication.
+
+### Remaining OAuth checks
+
+- GitHub OAuth app registration is complete with the production callback above. Generating its client secret is blocked by GitHub's account-owner email verification. Until verification and secret configuration are complete, real GitHub sign-in is **not verified**.
+- Google OAuth credentials and consent configuration are not complete. The Google Cloud project setup could not be verified because the console failed to load its project state; real Google sign-in is **not verified**.
+- The social-login code and buttons are implemented, but they are not a substitute for configured credentials and successful real-account callback tests. Do not consider all assignment requirements complete until both providers are configured and tested.
 
 The database owner can manage the project in the [Neon console](https://console.neon.tech/app/projects/lingering-snow-97898076/branches/br-broad-math-azd6bzym). Connection passwords and OAuth credentials are not included in this repository.
 
-Do not submit until both providers work, the actual live link is added, and the checks above pass on the deployed site.
+Before submitting, complete both real-account OAuth checks. The live link, persistent database and live route/reload checks are ready.
 
 ## Submission
 
-- Live Link: _Not deployed yet; PostgreSQL schema is ready, but hosting/OAuth configuration and live verification are pending._
+- Live Link: [https://assignment-7-kohl-xi.vercel.app](https://assignment-7-kohl-xi.vercel.app)
 - GitHub Repository: [shadianoormou/Assignment-7](https://github.com/shadianoormou/Assignment-7)
