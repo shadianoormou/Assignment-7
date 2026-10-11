@@ -30,3 +30,8 @@ export type Category = {
   nameBn: string;
   icon: string;
 };
+
+export type TickerProduct = Pick<
+  Product,
+  "id" | "slug" | "nameBn" | "image" | "unit" | "today" | "change"
+>;

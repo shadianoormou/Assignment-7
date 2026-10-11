@@ -16,7 +16,7 @@ export default async function HomePage() {
   const fallers = [...products].filter((product) => product.change.dir === "down").sort((a, b) => a.change.pct - b.change.pct).slice(0, 6);
 
   return <>
-    <Hero />
+    <Hero productCount={products.length} />
     <section className="highlight-strip container">
       <div className="section-heading"><div><span className="eyebrow"><ArrowUp size={14} /> দামের গতি</span><h2>আজ দাম বেড়েছে</h2></div><span className="section-title-icon">▲</span></div>
       <div className="highlight-grid">{risers.map((product) => <MiniProduct key={product.id} product={product} />)}</div>

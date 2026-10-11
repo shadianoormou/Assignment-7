@@ -6,10 +6,11 @@ import { LogIn, LogOut, Menu, UserRound, X } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { FALLBACK_CATEGORIES } from "@/lib/constants";
-import { dateInBangla } from "@/lib/format";
+import { changeLabel, dateInBangla, price, unitLabel } from "@/lib/format";
 import { authClient } from "@/lib/auth-client";
+import type { Category, TickerProduct } from "@/lib/types";
 
-export function Navbar() {
+export function Navbar({ categories, tickerProducts }: { categories: Category[]; tickerProducts: TickerProduct[] }) {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -27,7 +28,7 @@ export function Navbar() {
     });
   }
 
-  const navLinks = FALLBACK_CATEGORIES.map((category) => ({
+  const navLinks = (categories.length ? categories : FALLBACK_CATEGORIES).map((category) => ({
     ...category,
     href: `/category/${category.slug}`,
   }));
@@ -71,7 +72,7 @@ export function Navbar() {
             </>
           ) : (
             <>
-              <Link className="text-button hide-mobile" href="/signin">
+              <Link className="text-button" href="/signin">
                 <LogIn size={16} /> সাইন ইন
               </Link>
               <Link className="solid-button small" href="/signup">
@@ -90,12 +91,14 @@ export function Navbar() {
         </div>
       </div>
       <div className="ticker" aria-label="দামের আপডেট">
-        <div className="ticker-track">
-          {[...navLinks, ...navLinks].map((category, index) => (
-            <span key={`${category.slug}-${index}`} className="ticker-item">
-              {category.icon} {category.nameBn} <b>আজকের দর</b> <i>{index % 3 === 0 ? "▲" : "▼"} {index + 1}.২%</i>
-            </span>
+        <div className="ticker-track" aria-live="polite">
+          {(tickerProducts.length ? [...tickerProducts, ...tickerProducts] : []).map((product, index) => (
+            <Link href={`/product/${product.slug}`} key={`${product.id}-${index}`} className="ticker-item">
+              {product.image} {product.nameBn} <b>{price(product.today)} / {unitLabel(product.unit)}</b>{" "}
+              <i>{changeLabel(product.change.dir, product.change.pct)}</i>
+            </Link>
           ))}
+          {!tickerProducts.length && <span className="ticker-item">🧺 বাজারের পণ্যের দাম আপডেট হচ্ছে...</span>}
         </div>
       </div>
     </header>

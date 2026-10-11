@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import { bnNumber } from "@/lib/format";
 
-export function Hero() {
+export function Hero({ productCount }: { productCount: number }) {
   return (
     <section className="hero container">
       <div className="hero-copy">
@@ -12,7 +13,7 @@ export function Hero() {
           <Link className="solid-button" href="#সব-পণ্য">সব পণ্যের দাম দেখুন <span>↓</span></Link>
           <Link className="outline-button" href="/category/sobji">জনপ্রিয় বাজার <span>↗</span></Link>
         </div>
-        <div className="hero-proof"><span className="proof-avatars">👩🏽‍🌾 👨🏽‍🍳</span><span><strong>৩২+</strong> পণ্যের দৈনিক আপডেট</span></div>
+        <div className="hero-proof"><span className="proof-avatars">👩🏽‍🌾 👨🏽‍🍳</span><span><strong>{bnNumber(productCount)}+</strong> পণ্যের দৈনিক আপডেট</span></div>
       </div>
       <div className="hero-visual">
         <div className="hero-orbit orbit-one" />

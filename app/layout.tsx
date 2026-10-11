@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Footer } from "@/components/footer";
 import { Navbar } from "@/components/navbar";
 import { ToastProvider } from "@/components/toast-provider";
+import { getCategories, getProducts } from "@/lib/api";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -9,11 +10,22 @@ export const metadata: Metadata = {
   description: "বাংলাদেশের নিত্যপ্রয়োজনীয় পণ্যের সর্বশেষ বাজারদর এক নজরে দেখুন।",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const [categories, products] = await Promise.all([getCategories(), getProducts()]);
+  const tickerProducts = products.map(({ id, slug, nameBn, image, unit, today, change }) => ({
+    id,
+    slug,
+    nameBn,
+    image,
+    unit,
+    today,
+    change,
+  }));
+
   return (
     <html lang="bn">
       <body>
-        <Navbar />
+        <Navbar categories={categories} tickerProducts={tickerProducts} />
         <main>{children}</main>
         <Footer />
         <ToastProvider />
