@@ -109,7 +109,7 @@ pnpm lint
 pnpm build
 ```
 
-The nine regression tests cover Bengali numbers, the Dhaka date, market min/max/average, API outages, malformed responses, unknown slugs and authentication-origin selection (explicit override, stable Vercel Production origin, and no implicit production origin for local/preview environments). API failures show an error/retry state, not a misleading empty product list.
+The 14 regression tests cover Bengali numbers, the Dhaka date, market min/max/average, API outages, malformed responses and array entries, unknown slugs, category-filter isolation, public summary-only data, and authentication-origin selection (explicit override, stable Vercel Production origin, and no implicit production origin for local/preview environments). API failures show an error/retry state, not a misleading empty product list. Category sorting receives only the card fields; market tables are passed to the authenticated Product Details page, not to public sorting or the ticker.
 
 `pnpm test:smoke` runs 17 HTTP/authentication checks against `http://localhost:3002` (override with `TEST_APP_URL`). It creates synthetic users, so run it only against a local server using a separate, migrated test database. The script refuses to write to a non-local host. For a production-mode local test, provide a random secret, `BETTER_AUTH_URL=http://localhost:3002` and an absolute test `BETTER_AUTH_DB_PATH`, then run `pnpm start --port 3002`.
 
