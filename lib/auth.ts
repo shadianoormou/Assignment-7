@@ -3,6 +3,7 @@ import { betterAuth } from "better-auth";
 import { Pool } from "pg";
 import { mkdirSync } from "node:fs";
 import { dirname, isAbsolute } from "node:path";
+import { authOrigin } from "./auth-origin";
 
 let instance: ReturnType<typeof createAuth> | undefined;
 
@@ -10,7 +11,7 @@ let instance: ReturnType<typeof createAuth> | undefined;
 function createAuth() {
   const production = process.env.NODE_ENV === "production";
   const secret = process.env.BETTER_AUTH_SECRET;
-  const baseURL = process.env.BETTER_AUTH_URL;
+  const baseURL = authOrigin();
   const databaseURL = process.env.DATABASE_URL;
   const sqlitePath = process.env.BETTER_AUTH_DB_PATH ?? "data/auth.db";
 
