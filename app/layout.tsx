@@ -5,6 +5,8 @@ import { Navbar } from "@/components/navbar";
 import { ToastProvider } from "@/components/toast-provider";
 import { getCategories, getProducts } from "@/lib/api";
 import { dateInBangla } from "@/lib/format";
+import { Suspense } from "react";
+import { AuthFeedback } from "@/components/auth-feedback";
 import "./globals.css";
 
 const bengaliFont = Hind_Siliguri({
@@ -36,6 +38,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <main>{children}</main>
         <Footer />
         <ToastProvider />
+        <Suspense fallback={null}><AuthFeedback /></Suspense>
       </body>
     </html>
   );

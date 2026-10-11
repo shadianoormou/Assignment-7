@@ -1,5 +1,6 @@
 import { AuthForm } from "@/components/auth-form";
+import { Suspense } from "react";
 
 export default function SignUpPage() {
-  return <section className="auth-page"><AuthForm mode="signup" /></section>;
+  return <section className="auth-page"><Suspense fallback={<div className="loader-ring" aria-label="লোড হচ্ছে" />}><AuthForm mode="signup" /></Suspense></section>;
 }

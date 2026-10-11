@@ -1,5 +1,7 @@
 import { ProfileView } from "@/components/profile-view";
+import { requireSession } from "@/lib/session";
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
+  await requireSession("/profile");
   return <ProfileView />;
 }

@@ -26,15 +26,21 @@ export function ProfileUpdateForm() {
       return;
     }
     setSaving(true);
-    const result = await authClient.updateUser({ name: nextName });
-    if (result.error) {
-      toast.error(result.error.message || "তথ্য আপডেট করা যায়নি");
-    } else {
-      await refetch();
-      toast.success("আপনার তথ্য আপডেট হয়েছে");
-      router.push("/profile");
+    try {
+      const result = await authClient.updateUser({ name: nextName });
+      if (result.error) {
+        toast.error(result.error.message || "তথ্য আপডেট করা যায়নি");
+      } else {
+        await refetch();
+        toast.success("আপনার তথ্য আপডেট হয়েছে");
+        router.push("/profile");
+        router.refresh();
+      }
+    } catch {
+      toast.error("সার্ভারের সাথে যোগাযোগ করা যায়নি। আবার চেষ্টা করুন");
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
   }
 
   if (isPending || !session?.user) return <div className="container page-loading"><div className="loader-ring" /><p>লোড হচ্ছে...</p></div>;

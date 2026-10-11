@@ -25,6 +25,7 @@ export function Navbar({ categories, tickerProducts, date }: { categories: Categ
             router.push("/");
             router.refresh();
           },
+          onError: () => { toast.error("সাইন আউট করা যায়নি। আবার চেষ্টা করুন"); },
         },
       });
     } catch {

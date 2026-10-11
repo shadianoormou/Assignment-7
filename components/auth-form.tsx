@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Github, LoaderCircle } from "lucide-react";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
 
@@ -14,7 +14,12 @@ export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
   const [loading, setLoading] = useState(false);
 
   const requestedCallback = searchParams.get("callbackUrl");
-  const callbackUrl = requestedCallback?.startsWith("/") && !requestedCallback.startsWith("//") ? requestedCallback : "/";
+  const callbackUrl = requestedCallback?.startsWith("/") && !requestedCallback.startsWith("//") && !requestedCallback.includes("\\") ? requestedCallback : "/";
+  const reason = searchParams.get("reason");
+  useEffect(() => {
+    if (reason === "protected") toast.error("এই পেজটি দেখতে আগে সাইন ইন করুন", { id: "protected-redirect" });
+    if (reason === "social-error") toast.error("Social Login সম্পন্ন হয়নি। আবার চেষ্টা করুন", { id: "social-error" });
+  }, [reason]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -25,6 +30,10 @@ export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
 
     if (!email || !password || (isSignUp && !name)) {
       toast.error("সবগুলো প্রয়োজনীয় তথ্য পূরণ করুন");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error("একটি সঠিক ইমেইল লিখুন");
       return;
     }
     if (password.length < 8) {
@@ -62,7 +71,7 @@ export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
   async function handleSocial(provider: "google" | "github") {
     setLoading(true);
     try {
-      const result = await authClient.signIn.social({ provider, callbackURL: callbackUrl });
+      const result = await authClient.signIn.social({ provider, callbackURL: "/?auth=success", errorCallbackURL: "/signin?reason=social-error" });
       if (result.error) {
         toast.error(`${provider === "google" ? "Google" : "GitHub"} Login সেটআপ করা নেই`);
       }
@@ -76,11 +85,11 @@ export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
   return (
     <div className="auth-card">
       <div className="auth-heading"><span className="auth-icon">{isSignUp ? "🌱" : "👋"}</span><p className="eyebrow">বাজার দর-এ স্বাগতম</p><h1>{isSignUp ? "নতুন অ্যাকাউন্ট তৈরি করুন" : "আবার দেখা হয়ে ভালো লাগছে"}</h1><p>{isSignUp ? "আপনার বাজারের হিসাব এক জায়গায় রাখুন।" : "আপনার ড্যাশবোর্ডে যেতে সাইন ইন করুন।"}</p></div>
-      <form onSubmit={handleSubmit} className="auth-form">
+      <form onSubmit={handleSubmit} className="auth-form" noValidate>
         {isSignUp && <label>আপনার নাম<input name="name" type="text" placeholder="যেমন: শাদিয়ানূর" autoComplete="name" /></label>}
         <label>ইমেইল<input name="email" type="email" placeholder="you@example.com" autoComplete="email" /></label>
         <label>পাসওয়ার্ড<input name="password" type="password" placeholder="কমপক্ষে ৮ অক্ষর" autoComplete={isSignUp ? "new-password" : "current-password"} /></label>
-        <button type="submit" className="solid-button full" disabled={loading}>{loading ? <LoaderCircle className="spin" size={18} /> : null}{isSignUp ? "অ্যাকাউন্ট তৈরি করুন" : "সাইন ইন করুন"}</button>
+        <button type="submit" className="btn solid-button full" disabled={loading}>{loading ? <LoaderCircle className="spin" size={18} /> : null}{isSignUp ? "অ্যাকাউন্ট তৈরি করুন" : "সাইন ইন করুন"}</button>
       </form>
       <div className="auth-divider"><span>অথবা</span></div>
       <div className="social-buttons">
