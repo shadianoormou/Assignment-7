@@ -85,7 +85,7 @@ For local development, replace the origin with `http://localhost:3000`. See the 
 1. Import this GitHub repository as a Next.js project.
 2. Attach a persistent managed PostgreSQL database and set `DATABASE_URL`. A project-local SQLite file is not suitable for serverless hosting.
 3. Configure `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` (the exact live origin), the official `NEXT_PUBLIC_API_BASE_URL`, and both providers' OAuth credentials.
-4. Run `pnpm auth:migrate` with those production environment variables to create the PostgreSQL schema. The database must be reachable from the migration environment.
+4. Set `DATABASE_URL_UNPOOLED` to the direct PostgreSQL connection for migrations, while `DATABASE_URL` uses the pooled connection for application traffic. Run `pnpm auth:migrate` with those environment variables. The database must be reachable from the migration environment. For an empty PostgreSQL database, `better-auth-postgresql.sql` is also available as a one-time bootstrap; the original `better-auth-schema.sql` is SQLite-only.
 5. Build with `pnpm build` and deploy. The build deliberately does not create or modify production database tables.
 6. Register the live OAuth callback URLs above and test both providers with real accounts.
 
@@ -117,9 +117,19 @@ Local browser checks completed: Home at 320, 375, 768, 1024 and 1440px; both num
 
 Before submitting, verify the deployed Home, Category, Product Details, Sign In, Sign Up and Profile routes. Also test direct reloads for dynamic routes, mobile layout, API loading, protected redirects and browser console errors.
 
-Deployment and successful Google/GitHub login are still unverified. Do not submit until both providers work, the actual live link is added, and the checks above pass on the deployed site.
+### Current deployment progress (11 October 2026)
+
+- A persistent Neon PostgreSQL 18 project, `bazar-dor-assignment7`, is provisioned on the Free plan in Singapore.
+- Database `bazardoor`, branch `production`: the four BetterAuth tables (`user`, `session`, `account`, `verification`) and their lookup indexes have been created and verified.
+- Existing self-managed BetterAuth is preserved; Neon-managed authentication is not enabled.
+- Hosting environment configuration and publication are pending. The database is not yet connected to a live application.
+- Real Google/GitHub login and live route/reload checks are still pending. No deployed URL is claimed until the application is published and tested.
+
+The database owner can manage the project in the [Neon console](https://console.neon.tech/app/projects/lingering-snow-97898076/branches/br-broad-math-azd6bzym). Connection passwords and OAuth credentials are not included in this repository.
+
+Do not submit until both providers work, the actual live link is added, and the checks above pass on the deployed site.
 
 ## Submission
 
-- Live Link: _Not deployed yet; hosting/database/OAuth configuration is required._
+- Live Link: _Not deployed yet; PostgreSQL schema is ready, but hosting/OAuth configuration and live verification are pending._
 - GitHub Repository: [shadianoormou/Assignment-7](https://github.com/shadianoormou/Assignment-7)
