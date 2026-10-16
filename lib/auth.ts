@@ -1,9 +1,7 @@
-import Database from "better-sqlite3";
 import { betterAuth } from "better-auth";
-import { Pool } from "pg";
-import { mkdirSync } from "node:fs";
-import { dirname, isAbsolute } from "node:path";
 import { authOrigin } from "./auth-origin";
+import { mongodbAdapter } from "better-auth/adapters/mongodb";
+import { getMongoResources } from "./mongodb";
 
 let instance: ReturnType<typeof createAuth> | undefined;
 
@@ -12,17 +10,12 @@ function createAuth() {
   const production = process.env.NODE_ENV === "production";
   const secret = process.env.BETTER_AUTH_SECRET;
   const baseURL = authOrigin();
-  const databaseURL = process.env.DATABASE_URL;
-  const sqlitePath = process.env.BETTER_AUTH_DB_PATH ?? "data/auth.db";
 
   if (production) {
     if (!secret || secret.length < 32 || secret.startsWith("replace-")) {
       throw new Error("Set a random BETTER_AUTH_SECRET of at least 32 characters before deployment.");
     }
     if (!baseURL) throw new Error("Set BETTER_AUTH_URL to the deployed application origin.");
-    if (!databaseURL && (!isAbsolute(sqlitePath) || process.env.VERCEL || process.env.NETLIFY)) {
-      throw new Error("Use DATABASE_URL for serverless hosting, or an absolute SQLite path on a persistent volume.");
-    }
   }
 
   const socialProviders: Record<string, { clientId: string; clientSecret: string }> = {};
@@ -32,10 +25,10 @@ function createAuth() {
   if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
     socialProviders.github = { clientId: process.env.GITHUB_CLIENT_ID, clientSecret: process.env.GITHUB_CLIENT_SECRET };
   }
-  if (!databaseURL) mkdirSync(dirname(sqlitePath), { recursive: true });
+  const { client, database } = getMongoResources();
 
   return betterAuth({
-    database: databaseURL ? new Pool({ connectionString: databaseURL, max: 5 }) : new Database(sqlitePath),
+    database: mongodbAdapter(database, { client }),
     secret: secret ?? "bazar-dor-local-development-secret-change-me",
     baseURL: baseURL ?? "http://localhost:3000",
     emailAndPassword: { enabled: true, autoSignIn: false },
